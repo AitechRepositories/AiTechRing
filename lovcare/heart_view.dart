@@ -21,6 +21,7 @@ import 'package:smartring_plugin/sdk/common/ble_protocol_constant.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 import 'package:get/get.dart' as getx;
 
+//testing
 class HeartView extends StatefulWidget {
   const HeartView({super.key});
 
@@ -49,36 +50,35 @@ class _HeartViewState extends State<HeartView> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) async {
-        try {
-          _bleData.irWaveList.clear();
-          MyLoading.show(context);
-          dataChart = await _healthRepository.getLastDayHeartRate();
-          _bleData.heartValue2.value =
-              await _healthRepository.getLastHeartRateReading();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      try {
+        _bleData.irWaveList.clear();
+        MyLoading.show(context);
+        dataChart = await _healthRepository.getLastDayHeartRate();
+        _bleData.heartValue2.value =
+            await _healthRepository.getLastHeartRateReading();
 
-          if (_bleData.heartValue2.value.isNotEmpty) {
-            _healthMeasurementEvaluator
-                .evaluateHeartRate(int.parse(_bleData.heartValue2.value));
-          }
-
-          _bleData.sendBle(SendType.openSingleHealth);
-
-          // Simulate live data every second
-          timer = Timer.periodic(Duration(seconds: 1), (_) {
-            setState(() {
-              _updateSpots();
-            });
-          });
-
-          setState(() {});
-          MyLoading.dismiss();
-        } on Exception catch (e) {
-          MyLoading.dismiss();
+        if (_bleData.heartValue2.value.isNotEmpty) {
+          _healthMeasurementEvaluator.evaluateHeartRate(
+            int.parse(_bleData.heartValue2.value),
+          );
         }
-      },
-    );
+
+        _bleData.sendBle(SendType.openSingleHealth);
+
+        // Simulate live data every second
+        timer = Timer.periodic(Duration(seconds: 1), (_) {
+          setState(() {
+            _updateSpots();
+          });
+        });
+
+        setState(() {});
+        MyLoading.dismiss();
+      } on Exception catch (e) {
+        MyLoading.dismiss();
+      }
+    });
   }
 
   getx.RxList<FlSpot> spots = <FlSpot>[].obs;
@@ -86,11 +86,12 @@ class _HeartViewState extends State<HeartView> {
   void _updateSpots() {
     counter++;
     if (_bleData.irWaveList.isNotEmpty) {
-      spots.value = _bleData.irWaveList
-          .asMap()
-          .entries
-          .map((e) => FlSpot(counter * 1.0, e.value.toDouble() / 10))
-          .toList();
+      spots.value =
+          _bleData.irWaveList
+              .asMap()
+              .entries
+              .map((e) => FlSpot(counter * 1.0, e.value.toDouble() / 10))
+              .toList();
       print("_updateSpots ${spots.last.x}  ${spots.last.y}  ${spots.last}");
     }
   }
@@ -223,9 +224,10 @@ class _HeartViewState extends State<HeartView> {
                             children: [
                               getx.Obx(
                                 () => MyAutoText(
-                                  text: _bleData.heartValue2.value.isNotEmpty
-                                      ? _bleData.heartValue2.value
-                                      : NA,
+                                  text:
+                                      _bleData.heartValue2.value.isNotEmpty
+                                          ? _bleData.heartValue2.value
+                                          : NA,
                                   color: ColorManger.white,
                                   size: FunctionManager.getResponsiveSize(
                                     context,
@@ -274,16 +276,18 @@ class _HeartViewState extends State<HeartView> {
                                     getDrawingHorizontalLine: (value) {
                                       return FlLine(
                                         // ignore: deprecated_member_use
-                                        color:
-                                            ColorManger.white.withOpacity(0.2),
+                                        color: ColorManger.white.withOpacity(
+                                          0.2,
+                                        ),
                                         strokeWidth: .7,
                                       );
                                     },
                                     getDrawingVerticalLine: (value) {
                                       return FlLine(
                                         // ignore: deprecated_member_use
-                                        color:
-                                            ColorManger.white.withOpacity(0.2),
+                                        color: ColorManger.white.withOpacity(
+                                          0.2,
+                                        ),
                                         strokeWidth: .7,
                                       );
                                     },
@@ -312,10 +316,12 @@ class _HeartViewState extends State<HeartView> {
 
                                       dotData: FlDotData(
                                         show: true,
-                                        checkToShowDot: (spot, barData) =>
-                                            spot ==
-                                            barData.spots
-                                                .last, // إظهار الدائرة عند آخر نقطة
+                                        checkToShowDot:
+                                            (spot, barData) =>
+                                                spot ==
+                                                barData
+                                                    .spots
+                                                    .last, // إظهار الدائرة عند آخر نقطة
                                         getDotPainter: (
                                           spot,
                                           percent,
@@ -325,8 +331,9 @@ class _HeartViewState extends State<HeartView> {
                                           return FlDotCirclePainter(
                                             radius:
                                                 4.sp, // تحديد نصف القطر للنقطة
-                                            color: ColorManger
-                                                .redHeart, // تحديد لون النقطة
+                                            color:
+                                                ColorManger
+                                                    .redHeart, // تحديد لون النقطة
                                             strokeWidth: 4, // سمك حدود النقطة
                                             strokeColor: Color(
                                               0xffFFB1B6,
@@ -345,10 +352,11 @@ class _HeartViewState extends State<HeartView> {
                               ),
                               getx.Obx(
                                 () => HrWave(
-                                    waveData: _bleData.irWaveList,
-                                    update: _bleData.update.value,
-                                    paintColor: 0xffda2048),
-                              )
+                                  waveData: _bleData.irWaveList,
+                                  update: _bleData.update.value,
+                                  paintColor: 0xffda2048,
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -390,9 +398,11 @@ class _HeartViewState extends State<HeartView> {
                                                             Expanded(
                                                               child: MyAutoText(
                                                                 text: easy.tr(
-                                                                    "current"),
-                                                                color: ColorManger
-                                                                    .grayHeart,
+                                                                  "current",
+                                                                ),
+                                                                color:
+                                                                    ColorManger
+                                                                        .grayHeart,
                                                                 size: 18.sp,
                                                               ),
                                                             ),
@@ -452,9 +462,11 @@ class _HeartViewState extends State<HeartView> {
                                                             Expanded(
                                                               child: MyAutoText(
                                                                 text: easy.tr(
-                                                                    "average"),
-                                                                color: ColorManger
-                                                                    .grayHeart,
+                                                                  "average",
+                                                                ),
+                                                                color:
+                                                                    ColorManger
+                                                                        .grayHeart,
                                                                 size: 18.sp,
                                                               ),
                                                             ),
@@ -513,10 +525,12 @@ class _HeartViewState extends State<HeartView> {
                                                           children: [
                                                             Expanded(
                                                               child: MyAutoText(
-                                                                text: easy
-                                                                    .tr("max"),
-                                                                color: ColorManger
-                                                                    .grayHeart,
+                                                                text: easy.tr(
+                                                                  "max",
+                                                                ),
+                                                                color:
+                                                                    ColorManger
+                                                                        .grayHeart,
                                                                 size: 18.sp,
                                                               ),
                                                             ),
@@ -610,63 +624,66 @@ class _HeartViewState extends State<HeartView> {
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: getx.Obx(
-                        () => _bleData.heartValue2.value.isNotEmpty
-                            ? Row(
-                                children: [
-                                  if (int.parse(_bleData.heartValue2.value) >=
-                                          60 &&
-                                      int.parse(_bleData.heartValue2.value) <=
-                                          100) ...[
-                                    recommendationsWidget(
-                                      icon: IconManger.heart4,
-                                      text: easy.tr("keepHydrated"),
-                                    ),
-                                    recommendationsWidget(
-                                      icon: IconManger.heart1,
-                                      text: easy.tr("deepBreathing"),
-                                    ),
-                                    recommendationsWidget(
-                                      icon: IconManger.heart2,
-                                      text: easy.tr("goForAWalk"),
-                                    ),
-                                  ] else if (int.parse(
-                                          _bleData.heartValue2.value) <
-                                      60) ...[
-                                    recommendationsWidget(
-                                      icon: IconManger.heart3,
-                                      text: easy.tr("stayActive"),
-                                    ),
-                                    recommendationsWidget(
-                                      icon: IconManger.heart4,
-                                      text: easy.tr("keepHydrated"),
-                                    ),
-                                    recommendationsWidget(
-                                      icon: IconManger.heart5,
-                                      text: easy.tr("balancedDiet"),
-                                    ),
-                                    recommendationsWidget(
-                                      icon: IconManger.heart6,
-                                      text: easy.tr("monitorSymptoms"),
-                                    ),
-                                  ] else if (int.parse(
-                                          _bleData.heartValue2.value) >
-                                      100) ...[
-                                    recommendationsWidget(
-                                      icon: IconManger.heart7,
-                                      text: easy.tr("relaxation"),
-                                    ),
-                                    recommendationsWidget(
-                                      icon: IconManger.heart8,
-                                      text: easy.tr("limitStimulants"),
-                                    ),
-                                    recommendationsWidget(
-                                      icon: IconManger.heart9,
-                                      text: easy.tr("avoidOverexertion"),
-                                    ),
-                                  ]
-                                ],
-                              )
-                            : Container(),
+                        () =>
+                            _bleData.heartValue2.value.isNotEmpty
+                                ? Row(
+                                  children: [
+                                    if (int.parse(_bleData.heartValue2.value) >=
+                                            60 &&
+                                        int.parse(_bleData.heartValue2.value) <=
+                                            100) ...[
+                                      recommendationsWidget(
+                                        icon: IconManger.heart4,
+                                        text: easy.tr("keepHydrated"),
+                                      ),
+                                      recommendationsWidget(
+                                        icon: IconManger.heart1,
+                                        text: easy.tr("deepBreathing"),
+                                      ),
+                                      recommendationsWidget(
+                                        icon: IconManger.heart2,
+                                        text: easy.tr("goForAWalk"),
+                                      ),
+                                    ] else if (int.parse(
+                                          _bleData.heartValue2.value,
+                                        ) <
+                                        60) ...[
+                                      recommendationsWidget(
+                                        icon: IconManger.heart3,
+                                        text: easy.tr("stayActive"),
+                                      ),
+                                      recommendationsWidget(
+                                        icon: IconManger.heart4,
+                                        text: easy.tr("keepHydrated"),
+                                      ),
+                                      recommendationsWidget(
+                                        icon: IconManger.heart5,
+                                        text: easy.tr("balancedDiet"),
+                                      ),
+                                      recommendationsWidget(
+                                        icon: IconManger.heart6,
+                                        text: easy.tr("monitorSymptoms"),
+                                      ),
+                                    ] else if (int.parse(
+                                          _bleData.heartValue2.value,
+                                        ) >
+                                        100) ...[
+                                      recommendationsWidget(
+                                        icon: IconManger.heart7,
+                                        text: easy.tr("relaxation"),
+                                      ),
+                                      recommendationsWidget(
+                                        icon: IconManger.heart8,
+                                        text: easy.tr("limitStimulants"),
+                                      ),
+                                      recommendationsWidget(
+                                        icon: IconManger.heart9,
+                                        text: easy.tr("avoidOverexertion"),
+                                      ),
+                                    ],
+                                  ],
+                                )
+                                : Container(),
                       ),
                     ),
                   ),
@@ -718,20 +735,21 @@ class _HeartViewState extends State<HeartView> {
                           },
                           underline: Container(),
 
-                          items: items.map<DropdownMenuItem<String>>((
-                            String value,
-                          ) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(
-                                value,
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 9.sp,
-                                ),
-                              ),
-                            );
-                          }).toList(),
+                          items:
+                              items.map<DropdownMenuItem<String>>((
+                                String value,
+                              ) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(
+                                    value,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 9.sp,
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
                           dropdownColor: Colors.black,
                           style: TextStyle(color: Colors.white),
                         ),
@@ -791,36 +809,37 @@ class _HeartViewState extends State<HeartView> {
                           rightTitles: AxisTitles(),
                           topTitles: AxisTitles(),
                           leftTitles: AxisTitles(
-                              sideTitles: SideTitles(
-                            reservedSize: 20.w,
-                            showTitles: true,
-                            interval: 15.5,
-                            getTitlesWidget: (value, meta) {
-                              if (value >= meta.max) {
-                                return Text(
-                                  value.toInt().toString(),
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 7.sp,
-                                    fontWeight: FontWeight.bold,
+                            sideTitles: SideTitles(
+                              reservedSize: 20.w,
+                              showTitles: true,
+                              interval: 15.5,
+                              getTitlesWidget: (value, meta) {
+                                if (value >= meta.max) {
+                                  return Text(
+                                    value.toInt().toString(),
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 7.sp,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  );
+                                } else if (value == meta.min) {
+                                  return Text('');
+                                }
+                                return Padding(
+                                  padding: const EdgeInsets.only(right: 1.0),
+                                  child: Text(
+                                    value.toInt().toString(),
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 7.sp,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 );
-                              } else if (value == meta.min) {
-                                return Text('');
-                              }
-                              return Padding(
-                                padding: const EdgeInsets.only(right: 1.0),
-                                child: Text(
-                                  value.toInt().toString(),
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 7.sp,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              );
-                            },
-                          )),
+                              },
+                            ),
+                          ),
                           // bottomTitles: AxisTitles(
                           //   sideTitles: SideTitles(
                           //     showTitles: true,
@@ -875,15 +894,16 @@ class _HeartViewState extends State<HeartView> {
 
                             dotData: FlDotData(
                               show: true,
-                              checkToShowDot: (spot, barData) =>
-                                  spot == FlSpot(3, 4.3),
+                              checkToShowDot:
+                                  (spot, barData) => spot == FlSpot(3, 4.3),
                               getDotPainter: (spot, percent, barData, index) {
                                 return FlDotCirclePainter(
                                   radius: 7.w, // تحديد نصف القطر للنقطة
                                   color: ColorManger.redOX, // تحديد لون النقطة
                                   strokeWidth: 4.w, // سمك حدود النقطة
-                                  strokeColor: ColorManger
-                                      .background, // تحديد لون الحدود
+                                  strokeColor:
+                                      ColorManger
+                                          .background, // تحديد لون الحدود
                                 );
                               },
                             ), // جعل النقاط تظهر
